@@ -11,7 +11,7 @@ class StaffAndUsersCant(BasePermission):
 
 
 
-class IsOwner(BasePermission):
+class IsOwnerOrStaff(BasePermission):
 
     def has_permission(self, request, view):
         if request.user == view.get_object().user:
