@@ -13,7 +13,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
 
     def get_permissions(self):
-        if self.action == 'create' or 'destroy':
+        if self.action == 'create' or self.action == 'destroy':
             permission_classes = [StaffAndUsersCant]
         else:
             permission_classes = [IsOwner]
