@@ -12,6 +12,12 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(owner=self.request.user)
+        return queryset
+
     def get_permissions(self):
         if self.action == 'create' or self.action == 'destroy':
             permission_classes = [StaffAndUsersCant]
@@ -29,6 +35,12 @@ class LessonListAPIView(generics.ListAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsOwnerOrStaff]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(owner=self.request.user)
+        return queryset
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
