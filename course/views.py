@@ -4,7 +4,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAdminUser
 
 from course.models import Course, Lesson, Payments
-from course.permissions import StaffAndUsersCant, IsOwnerOrStaff
+from course.permissions import IsUsers, IsOwnerOrStaff
 from course.serializers import CourseSerializer, LessonSerializer, PaymentsSerializer
 
 
@@ -20,7 +20,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'create' or self.action == 'destroy':
-            permission_classes = [StaffAndUsersCant]
+            permission_classes = [IsUsers]
         else:
             permission_classes = [IsOwnerOrStaff]
         return [permission() for permission in permission_classes]
@@ -28,7 +28,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializer
-    permission_classes = [StaffAndUsersCant]
+    permission_classes = [IsUsers]
 
 
 class LessonListAPIView(generics.ListAPIView):
@@ -57,7 +57,7 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
     queryset = Lesson.objects.all()
-    permission_classes = [StaffAndUsersCant]
+    permission_classes = [IsUsers]
 
 
 class PaymentsListAPIView(generics.ListAPIView):
