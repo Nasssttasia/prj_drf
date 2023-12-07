@@ -3,7 +3,7 @@ from rest_framework import viewsets, generics
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from course.models import Course, Lesson, Payments
+from course.models import Course, Lesson, Payments, Subscription
 from course.paginators import CoursePaginator
 from course.permissions import IsUsers, IsOwnerOrStaff
 from course.serializers import CourseSerializer, LessonSerializer, PaymentsSerializer, SubscriptionSerializer
@@ -77,3 +77,8 @@ class SubscriptionCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class SubscriptionDestroyAPIView(generics.DestroyAPIView):
+    queryset = Subscription.objects.all()
+    permission_classes = [IsAuthenticated]
