@@ -98,12 +98,14 @@ class LessonTestCase(APITestCase):
 
         self.client.post(
             '/lesson/create/',
-            data=lesson
+            data=lesson,
+            format='json'
         )
 
         response = self.client.patch(
             'lesson/update/1/',
-            {'title': 'test update update'}
+            {'title': 'test update update'},
+            format='json'
         )
         print(response.json())
 
