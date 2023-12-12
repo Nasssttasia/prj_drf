@@ -1,7 +1,9 @@
+import stripe
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, generics
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 
 from course.models import Course, Lesson, Payments, Subscription
 from course.paginators import CoursePaginator
@@ -63,12 +65,41 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsUsers]
 
 
+class PaymentsCreateAPIView(generics.CreateAPIView):
+    serializer_class = PaymentsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def payment_create(self, serializer):
+        payment = serializer.save()
+        stripe.api_key = 'sk_test_51OMYTLIPYT4aN48f1Sx8tKPiiZmA9RkBN5L8OSmLu9q5HtBl6jqUuhoOe8oD1haMMISnQQmJhshVPZ8BFzUhKxiU00gGzlmXOo'
+        pay = stripe.PaymentIntent.create(
+            amount=payment.payment_amount,
+            currency='usd',
+            automatic_payment_methods={'enabled': True}
+        )
+        pay.save()
+        return super().perform_create(serializer)
+
+
 class PaymentsListAPIView(generics.ListAPIView):
     serializer_class = PaymentsSerializer
     queryset = Payments.objects.all()
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ('paid_course', 'paid_lesson', 'payment_method',)
     ordering_fields = ('date_of_payment',)
+
+
+class PaymentsRetrieveAPIView(generics.RetrieveAPIView):
+    serializer_class = PaymentsSerializer
+    queryset = Payments.objects.all()
+    permission_classes = [IsAuthenticated, IsOwnerOrStaff]
+
+    def get_payment(self, payment_id):
+        stripe.api_key = 'sk_test_51OMYTLIPYT4aN48f1Sx8tKPiiZmA9RkBN5L8OSmLu9q5HtBl6jqUuhoOe8oD1haMMISnQQmJhshVPZ8BFzUhKxiU00gGzlmXOo'
+        payment = stripe.PaymentIntent.retrieve(payment_id)
+        return Response({
+            'status': payment.status,
+            'body': payment})
 
 
 class SubscriptionCreateAPIView(generics.CreateAPIView):

@@ -103,11 +103,11 @@ class LessonTestCase(APITestCase):
         )
 
         response = self.client.patch(
-            'lesson/update/1/',
+            f'lesson/update/{self.lesson.id}/',
             {'title': 'test update update'},
             format='json'
         )
-        print(response.json())
+
 
         self.assertEqual(
             response.status_code,
