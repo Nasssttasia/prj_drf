@@ -54,7 +54,6 @@ class LessonTestCase(APITestCase):
             response.status_code,
             status.HTTP_201_CREATED
         )
-        print(response.json())
         self.assertEqual(
             response.json(),
             {'id': 2, 'title': 'Test les', 'description': 'text', 'img': None, 'link': 'https://www.youtube.com/', 'user': None, 'course': 1}
@@ -63,40 +62,13 @@ class LessonTestCase(APITestCase):
             Lesson.objects.all().exists()
         )
 
-    def test_list_lesson(self):
-        """Тест списка уроков"""
-
-        lesson = {
-            'id': 1,
-            'title': self.lesson.title,
-            'description': self.lesson.description,
-            'link': self.lesson.link,
-            'course': self.lesson.course.id
-        }
-
-        response = self.client.post(
-            reverse('course:lesson-create'),
-            data=lesson
-        )
-
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_201_CREATED
-        )
-
         response = self.client.get(
             '/lesson/',
         )
-        print(response)
         self.assertEqual(
             response.status_code,
             status.HTTP_200_OK
         )
-        '''self.assertEqual(
-            response.json()["results"][0],
-            {'id': response.json()["results"][0]["id"], 'title': 'test list', 'description': 'test test list',
-             'img': None, 'link': 'https://www.youtube.com/', 'user': None, 'course': self.course.id}
-        )'''
 
     def test_update_lesson(self):
         """Тест изменения уроков"""
@@ -175,7 +147,7 @@ class SubscriptionTestCase(APITestCase):
         self.lesson.save()
         self.client.force_authenticate(user=self.user)
 
-    def test_create_subscription(self):
+    def test_create_delete_subscription(self):
         """Тест создания подписки"""
         subscription = {
             'user': 1,

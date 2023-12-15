@@ -9,12 +9,17 @@ from course.models import Course, Lesson, Payments, Subscription
 from course.paginators import CoursePaginator
 from course.permissions import IsUsers, IsOwnerOrStaff
 from course.serializers import CourseSerializer, LessonSerializer, PaymentsSerializer, SubscriptionSerializer
+from course.tasks import check_mail_delay
 
 
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     pagination_class = CoursePaginator
+
+    def update(self, request, *args, **kwargs):
+        check_mail_delay.delay(kwargs['pk'])
+        return super().update(request, *args, **kwargs)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -59,6 +64,9 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsOwnerOrStaff]
 
+    '''id_course = Lesson.objects.course.pk
+    check_mail_delay.delay(id_course)'''
+
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
     queryset = Lesson.objects.all()
@@ -77,7 +85,7 @@ class PaymentsCreateAPIView(generics.CreateAPIView):
             currency='usd',
             automatic_payment_methods={'enabled': True}
         )
-        pay.save()
+        payment = serializer.save(payment_id=pay['id'])
         return super().perform_create(serializer)
 
 

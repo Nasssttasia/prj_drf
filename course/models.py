@@ -16,7 +16,7 @@ class Course(models.Model):
     img = models.ImageField(upload_to='course_img/', verbose_name='аватарка', **NULLABLE)
     description = models.TextField(verbose_name='описание курса', **NULLABLE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь', **NULLABLE)
-
+    test = models.CharField(max_length=100, **NULLABLE)
     def __str__(self):
         return f'{self.title}'
 
@@ -48,6 +48,7 @@ class Payments(models.Model):
     paid_lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, **NULLABLE)
     payment_amount = models.IntegerField(verbose_name='сумма платежа')
     payment_method = models.CharField(max_length=50, choices=METHOD, verbose_name='метод оплаты')
+    payment_id = models.IntegerField(verbose_name='id платежа')
 
     def __str__(self):
         return f'{self.paid_course if self.paid_course else self.paid_lesson} - {self.user}'
