@@ -64,8 +64,10 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsOwnerOrStaff]
 
-    '''id_course = Lesson.objects.course.pk
-    check_mail_delay.delay(id_course)'''
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        id_course = instance.course.id
+        check_mail_delay.delay(id_course)
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
