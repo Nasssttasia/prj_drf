@@ -155,6 +155,9 @@ EMAIL_HOST_PASSWORD = 'AsTSNVv7pun9'
 EMAIL_USE_SSL = True
 
 
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = 'redis://redis:6379/0' # Например, Redis, который по умолчанию работает на порту 6379
+
 '''# Настройки для Celery
 
 # URL-адрес брокера сообщений
